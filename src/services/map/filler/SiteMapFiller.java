@@ -9,7 +9,7 @@ import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
 
 public class SiteMapFiller extends RecursiveTask<List<String>> {
-    private static final int MILLISECONDS_DELAY = 120;
+    private static final int MILLISECONDS_DELAY = 150;
 
     private final transient MapFillerArgs args;
     private final String currentPage;
@@ -23,12 +23,17 @@ public class SiteMapFiller extends RecursiveTask<List<String>> {
 
     @Override
     protected List<String> compute() {
+        var count = args.getProcessedArticlesCount();
+        if(count.get() >= args.getMaxArticlesCount()){
+            return List.of();
+        }
+        count.incrementAndGet();
+
         List<String> urls;
         try {
-            args.visitedLinks().add(currentPage);
-            urls = args.parser().parse(currentPage);
+            args.getVisitedLinks().add(currentPage);
+            urls = args.getParser().parse(currentPage);
         } catch (IOException e) {
-            System.out.println("Не удалось открыть страницу: " + currentPage);
             return List.of();
         }
         processUrls(urls);
@@ -37,16 +42,17 @@ public class SiteMapFiller extends RecursiveTask<List<String>> {
 
     private void processUrls(List<String> urls) {
         List<SiteMapFiller> taskList = new LinkedList<>();
+
+        int maxSearchingLevel = args.getMaxSearchingLevel();
+        var factory = args.getLinksFactory();
+
         for (var url : urls) {
             if (checkLink(url)) {
-                var factory = args.linksFactory();
                 var link = factory.createLink(url);
-                args.map().addLink(link);
-
-                if (currentLevel > args.maxSearchingLevel()) {
+                args.getMap().addLink(link);
+                if (currentLevel > maxSearchingLevel) {
                     return;
                 }
-
                 SiteMapFiller task = new SiteMapFiller(args, currentLevel + 1, url);
                 taskList.add(task);
                 task.fork();
@@ -59,7 +65,7 @@ public class SiteMapFiller extends RecursiveTask<List<String>> {
             e.printStackTrace();
         }
 
-        System.out.println("Обработка страницы:  " + currentPage + " Найдено: " + taskList.size() + " ссылок");
+        System.out.println("Обработка страницы:  " + currentPage + " Найдено: " + taskList.size() + " новых ссылок");
         for (var task : taskList) {
             task.join();
         }
@@ -70,7 +76,7 @@ public class SiteMapFiller extends RecursiveTask<List<String>> {
     }
 
     private boolean checkLink(String link) {
-        var visitedLinks = args.visitedLinks();
+        var visitedLinks = args.getVisitedLinks();
         if (visitedLinks.contains(link)) {
             return false;
         }

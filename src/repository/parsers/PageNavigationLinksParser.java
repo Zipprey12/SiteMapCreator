@@ -26,9 +26,6 @@ public class PageNavigationLinksParser implements SiteParser {
         var tags = document.select("a[href]");
         for (var tag : tags) {
             String url = tag.attr("href");
-            if (url.contains("sendel_ru_dump-postgres-liquibase.sql")) {
-                System.out.println("");
-            }
             var link = linksFactory.createLink(url);
             if (link == null) {
                 continue;

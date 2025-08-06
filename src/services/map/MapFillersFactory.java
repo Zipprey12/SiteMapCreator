@@ -13,6 +13,7 @@ import java.util.concurrent.ForkJoinPool;
 
 public class MapFillersFactory {
     private static final int DEFAULT_MAXIMUM_SEARCHING_LEVEL = 3;
+    private static final int DEFAULT_MAX_PREPARED_ARTICLES_COUNT = 300;
 
     private final LinksFactory linksFactory;
     private final SiteMap map;
@@ -37,18 +38,17 @@ public class MapFillersFactory {
         maxLevel = level;
     }
 
-    public LinksFactory getLinksFactory(){
+    public LinksFactory getLinksFactory() {
         return linksFactory;
     }
 
     public SiteMap createMap() {
-        map.initialize(linksFactory.getInitialPage(), linksFactory.getDomain());
-
         var initialPage = linksFactory.getInitialPage();
+        map.initialize(initialPage, linksFactory.getInitialLinkParts());
+
         try {
             Jsoup.connect(initialPage);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
 
@@ -60,7 +60,10 @@ public class MapFillersFactory {
     }
 
     private SiteMapFiller createFiller(String url) {
-        var args = new MapFillerArgs(map, parser, visitedLinks, linksFactory, maxLevel);
+        var args = new MapFillerArgs(map, parser, visitedLinks, linksFactory);
+        args.setMaxArticlesCount(DEFAULT_MAX_PREPARED_ARTICLES_COUNT);
+        args.setMaxSearchingLevel(maxLevel);
+
         return new SiteMapFiller(args, 0, url);
     }
 }

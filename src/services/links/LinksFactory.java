@@ -4,6 +4,9 @@ import model.Link;
 import model.SiteProtocol;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,42 +16,40 @@ public abstract class LinksFactory implements Serializable {
 
     private String domain;
     private SiteProtocol protocol;
-    private String initialPage;
+    private List<String> initialLinkParts;
 
     public abstract Link createLink(String path);
+
     public abstract String getAbsoluteUrl(Link link);
 
     public SiteProtocol getProtocol() {
         return protocol;
     }
 
-    public String getDomain() {
-        return domain;
-    }
-
     public String getInitialPage() {
-        if(protocol == null){
+        if (protocol == null) {
             throw new IllegalStateException("Protocol value must be set to create initial page");
         }
-        return initialPage;
+        return protocol.getValue() + domain;
+    }
+
+    public List<String> getInitialLinkParts() {
+        if (initialLinkParts == null) {
+            return List.of();
+        }
+        return Collections.unmodifiableList(initialLinkParts);
     }
 
     public void setProtocol(SiteProtocol protocol) {
-        if(protocol != null){
-            this.protocol = protocol;
-            updateInitialPage();
-        }
+        this.protocol = protocol;
     }
 
     public boolean trySetInitialParsingPage(String url) {
+        this.protocol = null;
+        this.domain = null;
+
         var normalizedUrl = normalizeUrl(url);
-        if (tryParseUrl(normalizedUrl)) {
-            if (protocol != null) {
-                updateInitialPage();
-            }
-            return true;
-        }
-        return false;
+        return tryParseUrl(normalizedUrl);
     }
 
     protected String normalizeUrl(String url) {
@@ -62,9 +63,9 @@ public abstract class LinksFactory implements Serializable {
         String parsedProtocol = parseProtocol(url);
         if (parsedProtocol != null) {
             protocol = SiteProtocol.fromValue(parsedProtocol);
-            return parseDomain(url, parsedProtocol.length());
+            return parseParts(url, parsedProtocol.length());
         }
-        return parseDomain(url, 0);
+        return parseParts(url, 0);
     }
 
     private String parseProtocol(String url) {
@@ -75,24 +76,19 @@ public abstract class LinksFactory implements Serializable {
         return null;
     }
 
-    private boolean parseDomain(String url, int startIndex) {
+    private boolean parseParts(String url, int startIndex) {
         while (startIndex < url.length() && url.charAt(startIndex) == '/') {
             startIndex++;
         }
         if (startIndex == url.length()) {
             return false;
         }
+        url = url.substring(startIndex);
+        initialLinkParts = new LinkedList<>();
 
-        var splitterIndex = url.indexOf('/', startIndex);
-        if (splitterIndex > 0) {
-            domain = url.substring(startIndex, splitterIndex);
-        } else {
-            domain = url.substring(startIndex);
-        }
+        var link = new Link(url);
+        initialLinkParts = link.getParts();
+        domain = initialLinkParts.getFirst();
         return true;
-    }
-
-    private void updateInitialPage() {
-        initialPage = protocol.getValue() + domain;
     }
 }

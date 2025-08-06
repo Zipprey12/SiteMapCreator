@@ -14,7 +14,6 @@ public class CreateMapCommand implements Command {
     private final MapFillersFactory mapFillersFactory;
 
     private Navigator navigator;
-    private SiteProtocol protocol = null;
 
     public CreateMapCommand(MapFillersFactory mapFillersFactory) {
         this.linksFactory = mapFillersFactory.getLinksFactory();
@@ -48,13 +47,7 @@ public class CreateMapCommand implements Command {
             System.out.println("Введены некорректные данные!");
             return false;
         }
-
-        if (linksFactory.getProtocol() != null || tryInputProtocol()) {
-            linksFactory.setProtocol(protocol);
-            return true;
-        }
-
-        return false;
+        return linksFactory.getProtocol() != null || tryInputProtocol();
     }
 
     private boolean tryInputProtocol() {
@@ -62,15 +55,15 @@ public class CreateMapCommand implements Command {
             initializeNavigator();
         }
         navigator.runOnce();
-        return protocol != null;
+        return linksFactory.getProtocol() != null;
     }
 
     private void initializeNavigator() {
         navigator = new Navigator();
         navigator.setDescription("Выберите протокол подключения");
 
-        navigator.add(() -> protocol = SiteProtocol.HTTPS, "https")
-                .add(() -> protocol = SiteProtocol.HTTP, "http")
-                .add(() -> protocol = null, "отмена");
+        navigator.add(() -> linksFactory.setProtocol(SiteProtocol.HTTPS), "https")
+                .add(() ->  linksFactory.setProtocol(SiteProtocol.HTTP), "http")
+                .add(() -> linksFactory.setProtocol(null), "отмена");
     }
 }
