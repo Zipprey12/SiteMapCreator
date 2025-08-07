@@ -32,17 +32,4 @@ public class MultiChildSynchronizedTreeNode<T> {
     public synchronized void addChild(MultiChildSynchronizedTreeNode<T> child) {
         children.put(child.value, child);
     }
-
-    public synchronized MultiChildSynchronizedTreeNode<T> findChildByValue(T value) {
-        if (children.containsKey(value)) {
-            return children.get(value);
-        }
-        for (var child : children.values()) {
-            var node = child.findChildByValue(value);
-            if (node != null) {
-                return node;
-            }
-        }
-        return null;
-    }
 }
