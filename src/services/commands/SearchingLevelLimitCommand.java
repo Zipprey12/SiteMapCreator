@@ -1,6 +1,6 @@
 package services.commands;
 
-import services.map.MapFillersFactory;
+import services.map.filler.MapFillersFactory;
 
 import java.util.Scanner;
 

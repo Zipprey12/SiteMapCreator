@@ -1,11 +1,11 @@
-package services.map;
+package services.map.filler;
 
 import model.MapFillerArgs;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import repository.parsers.LinksParser;
 import services.links.LinksFactory;
-import services.map.filler.SiteMapFiller;
+import services.map.SiteMap;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -6,7 +6,7 @@ import services.commands.ExitCommand;
 import services.commands.SearchingLevelLimitCommand;
 import services.links.LinksFactory;
 import services.links.RelativeLinksFactory;
-import services.map.MapFillersFactory;
+import services.map.filler.MapFillersFactory;
 
 public class Main {
     public static void main(String[] args) {
