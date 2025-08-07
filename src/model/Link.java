@@ -5,20 +5,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Link {
-    private final List<String> parts;
+    private List<String> parts;
+    private final String value;
 
-    public Link(String string) {
-        var partsNames = string.split("/");
-        parts = new LinkedList<>();
-        for (var part : partsNames) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            parts.add(part);
-        }
+    public Link(String value) {
+        this.value = value;
     }
 
     public List<String> getParts() {
+        if(parts == null){
+            var partsNames = value.split("/");
+            parts = new LinkedList<>();
+            for (var part : partsNames) {
+                if (part.isEmpty()) {
+                    continue;
+                }
+                parts.add(part);
+            }
+        }
         return Collections.unmodifiableList(parts);
+    }
+
+    public String getValue(){
+        return value;
     }
 }

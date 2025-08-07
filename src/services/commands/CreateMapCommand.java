@@ -32,8 +32,9 @@ public class CreateMapCommand implements Command {
         }
         var map = mapFillersFactory.createMap();
         if (map == null) {
-            System.out.println("Не удалось подклучиться. Карта не была создана");
+            System.out.println("Не удалось подклучиться по данной ссылке. Карта не была создана");
         } else {
+            System.out.println("Происходит запись в файл. Не закрывайте приложение!");
             new MapWriter(map).write();
         }
     }

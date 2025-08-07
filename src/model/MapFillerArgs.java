@@ -1,6 +1,6 @@
 package model;
 
-import repository.parsers.SiteParser;
+import repository.parsers.LinksParser;
 import services.links.LinksFactory;
 import services.map.SiteMap;
 
@@ -9,14 +9,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MapFillerArgs {
     private final SiteMap map;
-    private final SiteParser parser;
+    private final LinksParser parser;
     private final LinksFactory linksFactory;
     private final AtomicInteger processedArticlesCount = new AtomicInteger(0);
 
-    private volatile Set<String> visitedLinks;
+    private Set<String> visitedLinks;
 
     private int maxSearchingLevel;
     private int maxArticlesCount;
+
+    public MapFillerArgs(SiteMap map, LinksParser parser, Set<String> visitedLinks, LinksFactory factory) {
+        this.map = map;
+        this.parser = parser;
+        this.visitedLinks = visitedLinks;
+        this.linksFactory = factory;
+    }
 
     public void setMaxSearchingLevel(int maxSearchingLevel) {
         this.maxSearchingLevel = maxSearchingLevel;
@@ -30,7 +37,7 @@ public class MapFillerArgs {
         return map;
     }
 
-    public SiteParser getParser() {
+    public LinksParser getParser() {
         return parser;
     }
 
@@ -46,20 +53,11 @@ public class MapFillerArgs {
         return maxArticlesCount;
     }
 
-    public MapFillerArgs(SiteMap map, SiteParser parser, Set<String> visitedLinks, LinksFactory factory) {
-        this.map = map;
-        this.parser = parser;
-        this.visitedLinks = visitedLinks;
-        this.linksFactory = factory;
-    }
-
     public AtomicInteger getProcessedArticlesCount() {
         return processedArticlesCount;
     }
 
-
     public Set<String> getVisitedLinks() {
         return visitedLinks;
     }
-
 }

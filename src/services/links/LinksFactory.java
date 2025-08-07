@@ -26,6 +26,10 @@ public abstract class LinksFactory implements Serializable {
         return protocol;
     }
 
+    public String getDomain(){
+        return domain;
+    }
+
     public String getInitialPage() {
         if (protocol == null) {
             throw new IllegalStateException("Protocol value must be set to create initial page");

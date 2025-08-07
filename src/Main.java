@@ -1,5 +1,5 @@
 import repository.parsers.PageNavigationLinksParser;
-import repository.parsers.SiteParser;
+import repository.parsers.LinksParser;
 import services.Navigator;
 import services.commands.CreateMapCommand;
 import services.commands.ExitCommand;
@@ -11,7 +11,7 @@ import services.map.MapFillersFactory;
 public class Main {
     public static void main(String[] args) {
         LinksFactory linksFactory = new RelativeLinksFactory();
-        SiteParser parser = new PageNavigationLinksParser(linksFactory);
+        LinksParser parser = new PageNavigationLinksParser(linksFactory);
         MapFillersFactory factory = new MapFillersFactory(parser, linksFactory);
 
         Navigator navigator = new Navigator();

@@ -1,5 +1,6 @@
 package repository.parsers;
 
+import model.Link;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,8 +10,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PageNavigationLinksParser implements SiteParser {
-
+public class PageNavigationLinksParser implements LinksParser {
     private final LinksFactory linksFactory;
 
     public PageNavigationLinksParser(LinksFactory factory) {
@@ -18,21 +18,17 @@ public class PageNavigationLinksParser implements SiteParser {
     }
 
     @Override
-    public List<String> parse(String pageAddress) throws IOException {
+    public List<Link> parse(String pageAddress) throws IOException {
         Connection connection = Jsoup.connect(pageAddress);
         Document document = connection.get();
-        List<String> list = new LinkedList<>();
+        List<Link> list = new LinkedList<>();
 
         var tags = document.select("a[href]");
         for (var tag : tags) {
             String url = tag.attr("href");
             var link = linksFactory.createLink(url);
-            if (link == null) {
-                continue;
-            }
-            var absolutePath = linksFactory.getAbsoluteUrl(link);
-            if (absolutePath != null) {
-                list.add(absolutePath);
+            if (link != null) {
+                list.add(link);
             }
         }
         return list;
