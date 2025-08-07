@@ -13,7 +13,7 @@ public class MapFillerArgs {
     private final LinksFactory linksFactory;
     private final AtomicInteger processedArticlesCount = new AtomicInteger(0);
 
-    private Set<String> visitedLinks;
+    private final Set<String> visitedLinks;
 
     private int maxSearchingLevel;
     private int maxArticlesCount;
