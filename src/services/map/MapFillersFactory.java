@@ -53,7 +53,7 @@ public class MapFillersFactory {
             Connection.Response response = Jsoup.connect(initialPage)
                     .followRedirects(false)
                     .execute();
-            if(response.statusCode() != PAGE_EXIST_STATUS_CODE){
+            if (response.statusCode() != PAGE_EXIST_STATUS_CODE) {
                 return null;
             }
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class MapFillersFactory {
         return map;
     }
 
-    private void reset(){
+    private void reset() {
         map = new SiteMap();
         visitedLinks.clear();
 

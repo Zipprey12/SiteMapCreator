@@ -25,14 +25,6 @@ public class MapFillerArgs {
         this.linksFactory = factory;
     }
 
-    public void setMaxSearchingLevel(int maxSearchingLevel) {
-        this.maxSearchingLevel = maxSearchingLevel;
-    }
-
-    public void setMaxArticlesCount(int maxArticlesCount) {
-        this.maxArticlesCount = maxArticlesCount;
-    }
-
     public SiteMap getMap() {
         return map;
     }
@@ -49,8 +41,16 @@ public class MapFillerArgs {
         return maxSearchingLevel;
     }
 
+    public void setMaxSearchingLevel(int maxSearchingLevel) {
+        this.maxSearchingLevel = maxSearchingLevel;
+    }
+
     public int getMaxArticlesCount() {
         return maxArticlesCount;
+    }
+
+    public void setMaxArticlesCount(int maxArticlesCount) {
+        this.maxArticlesCount = maxArticlesCount;
     }
 
     public AtomicInteger getProcessedArticlesCount() {

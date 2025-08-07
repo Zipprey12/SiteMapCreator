@@ -64,7 +64,7 @@ public class CreateMapCommand implements Command {
         navigator.setDescription("Выберите протокол подключения");
 
         navigator.add(() -> linksFactory.setProtocol(SiteProtocol.HTTPS), "https")
-                .add(() ->  linksFactory.setProtocol(SiteProtocol.HTTP), "http")
+                .add(() -> linksFactory.setProtocol(SiteProtocol.HTTP), "http")
                 .add(() -> linksFactory.setProtocol(null), "отмена");
     }
 }

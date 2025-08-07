@@ -1,5 +1,5 @@
-import repository.parsers.PageNavigationLinksParser;
 import repository.parsers.LinksParser;
+import repository.parsers.PageNavigationLinksParser;
 import services.Navigator;
 import services.commands.CreateMapCommand;
 import services.commands.ExitCommand;

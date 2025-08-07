@@ -9,14 +9,15 @@ public enum SiteProtocol {
     HTTPS("https://");
 
     private static final Map<String, SiteProtocol> MAP;
-    private final String value;
 
     static {
         MAP = Arrays.stream(values())
                 .collect(Collectors.toMap(SiteProtocol::getValue, p -> p));
     }
 
-    SiteProtocol(String value){
+    private final String value;
+
+    SiteProtocol(String value) {
         this.value = value;
     }
 
@@ -24,7 +25,7 @@ public enum SiteProtocol {
         return MAP.get(value);
     }
 
-    public String getValue(){
+    public String getValue() {
         return value;
     }
 }

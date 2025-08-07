@@ -1,6 +1,6 @@
 package repository.output;
 
-import model.MultiChildTreeNode;
+import model.LinkPartNode;
 import services.map.SiteMap;
 
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class MapWriter {
         );
     }
 
-    private void print(String prefix, MultiChildTreeNode<String> node, int level) throws IOException {
+    private void print(String prefix, LinkPartNode node, int level) throws IOException {
         String part = node.getValue() + "/";
         String absolutePath = prefix + part;
         prefix = absolutePath;
@@ -59,10 +59,13 @@ public class MapWriter {
         builder.append(absolutePath);
         builder.append("\n");
 
-        println(builder.toString());
+        if (node.isPage()) {
+            println(builder.toString());
+        }
 
         for (var child : node.getChildren()) {
-            print(prefix, child, level + 1);
+            var childNode = (LinkPartNode) child;
+            print(prefix, childNode, level + 1);
         }
 
         linesCount++;

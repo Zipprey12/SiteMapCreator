@@ -26,10 +26,11 @@ public abstract class LinksFactory implements Serializable {
         return protocol;
     }
 
+    public void setProtocol(SiteProtocol protocol) {
+        this.protocol = protocol;
+    }
+
     public String getInitialPage() {
-        if (protocol == null) {
-            throw new IllegalStateException("Protocol value must be set to create initial page");
-        }
         return protocol.getValue() + domain;
     }
 
@@ -38,10 +39,6 @@ public abstract class LinksFactory implements Serializable {
             return List.of();
         }
         return Collections.unmodifiableList(initialLinkParts);
-    }
-
-    public void setProtocol(SiteProtocol protocol) {
-        this.protocol = protocol;
     }
 
     public boolean trySetInitialParsingPage(String url) {

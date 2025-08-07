@@ -16,17 +16,17 @@ public class Navigator {
     private boolean isRunning;
     private String description;
 
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public Navigator add(Command command){
+    public Navigator add(Command command) {
         commandsList.add(command);
         commands.put(command, command.getDescription());
         return this;
     }
 
-    public Navigator add(Runnable runnable, String description){
+    public Navigator add(Runnable runnable, String description) {
         commandsList.add(runnable);
         commands.put(runnable, description);
         return this;
@@ -39,13 +39,12 @@ public class Navigator {
         }
     }
 
-    public void runOnce(){
+    public void runOnce() {
         showCommands();
         var command = selectCommand();
         if (command == null) {
             System.out.println("Введено некорректнное значение!");
-        }
-        else {
+        } else {
             command.run();
         }
     }
@@ -57,7 +56,7 @@ public class Navigator {
     public void showCommands() {
         System.out.println();
 
-        if(description != null){
+        if (description != null) {
             System.out.println(description);
         }
         for (int i = 0; i < commands.size(); i++) {
@@ -67,14 +66,13 @@ public class Navigator {
         }
     }
 
-    private Runnable selectCommand(){
+    private Runnable selectCommand() {
         System.out.println("[Ожидание ввода...]");
         var input = scanner.nextLine().trim().toLowerCase();
         try {
             int number = Integer.parseInt(input) - 1;
             return commandsList.get(number);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }

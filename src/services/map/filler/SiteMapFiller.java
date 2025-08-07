@@ -2,6 +2,7 @@ package services.map.filler;
 
 import model.Link;
 import model.MapFillerArgs;
+import services.links.LinksFactory;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -15,6 +16,9 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
     private final transient MapFillerArgs args;
     private final String currentPage;
     private final int currentLevel;
+
+    private int maxSearchingLevel;
+    private LinksFactory factory;
 
     public SiteMapFiller(MapFillerArgs args, int currentLevel, String currentPage) {
         this.args = args;
@@ -30,46 +34,55 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
         }
         count.incrementAndGet();
 
-        List<Link> urls;
+        List<Link> links;
         try {
             args.getVisitedLinks().add(currentPage);
-            urls = args.getParser().parse(currentPage);
+            links = args.getParser().parse(currentPage);
         } catch (IOException e) {
             return List.of();
         }
-        if (!urls.isEmpty()) {
-            processLinks(urls);
-        }
-        else {
-            System.out.println("1");
-        }
-        return urls;
+        factory = args.getLinksFactory();
+        maxSearchingLevel = args.getMaxSearchingLevel();
+        processLinks(links);
+        return links;
     }
 
     private void processLinks(List<Link> links) {
         List<SiteMapFiller> taskList = new LinkedList<>();
-
-        int maxSearchingLevel = args.getMaxSearchingLevel();
-        var factory = args.getLinksFactory();
-
         for (var link : links) {
-            if (checkLink(link.getValue())) {
-                args.getMap().addLink(link);
-                if (currentLevel > maxSearchingLevel) {
-                    return;
-                }
-                var absolutePath = factory.getAbsoluteUrl(link);
-                SiteMapFiller task = new SiteMapFiller(args, currentLevel + 1, absolutePath);
-                taskList.add(task);
+            if (!checkUrlVisit(link.getValue())) {
+                continue;
+            }
+            var task = processLink(link);
+            if (task != null) {
                 task.fork();
+                taskList.add(task);
             }
         }
         sleep();
 
-        System.out.println("Обработка страницы:  " + currentPage + " Найдено: " + taskList.size() + " новых ссылок");
+        showStatus(currentPage, links.size(), taskList.size());
         for (var task : taskList) {
             task.join();
         }
+    }
+
+    private boolean checkUrlVisit(String url) {
+        var visitedLinks = args.getVisitedLinks();
+        if (visitedLinks.contains(url)) {
+            return false;
+        }
+        visitedLinks.add(url);
+        return true;
+    }
+
+    private SiteMapFiller processLink(Link link) {
+        args.getMap().addLink(link);
+        if (currentLevel >= maxSearchingLevel) {
+            return null;
+        }
+        var absolutePath = factory.getAbsoluteUrl(link);
+        return new SiteMapFiller(args, currentLevel + 1, absolutePath);
     }
 
     private void sleep() {
@@ -81,12 +94,9 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
         }
     }
 
-    private boolean checkLink(String url) {
-        var visitedLinks = args.getVisitedLinks();
-        if (visitedLinks.contains(url)) {
-            return false;
-        }
-        visitedLinks.add(url);
-        return true;
+    private void showStatus(String link, int linksCount, int tasksCount) {
+        String out = String.format("Обработка страницы:  %1$s  Ссылок найдено: %2$d. Новых: %3$d",
+                link, linksCount, tasksCount);
+        System.out.println(out);
     }
 }

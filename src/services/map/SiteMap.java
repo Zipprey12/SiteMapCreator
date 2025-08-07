@@ -1,17 +1,18 @@
 package services.map;
 
 import model.Link;
-import model.MultiChildTreeNode;
+import model.LinkPartNode;
+import model.MultiChildSynchronizedTreeNode;
 
 import java.util.List;
 
 public class SiteMap {
-    private MultiChildTreeNode<String> mainNode;
+    private LinkPartNode mainNode;
     private String siteName;
     private String initialPage;
 
     public void initialize(String initialPage, List<String> linkParts) {
-        if(linkParts.isEmpty()){
+        if (linkParts.isEmpty()) {
             throw new IllegalArgumentException("To initialize the map's main node, linkParts must not be empty");
         }
         this.initialPage = initialPage;
@@ -19,17 +20,18 @@ public class SiteMap {
         initializeNodes(linkParts);
     }
 
-    private void initializeNodes(List<String> linkParts){
-        mainNode = new MultiChildTreeNode<>(initialPage);
+    private void initializeNodes(List<String> linkParts) {
+        mainNode = new LinkPartNode(initialPage);
         var current = mainNode;
-        for (int i = 1; i < linkParts.size(); i++){
-            var newNode = new MultiChildTreeNode<>(linkParts.get(i));
+        for (int i = 1; i < linkParts.size(); i++) {
+            var newNode = new LinkPartNode(linkParts.get(i));
             current.addChild(newNode);
             current = newNode;
         }
+        current.setPage(true);
     }
 
-    public MultiChildTreeNode<String> getMainNode() {
+    public LinkPartNode getMainNode() {
         return mainNode;
     }
 
@@ -43,7 +45,7 @@ public class SiteMap {
             return;
         }
 
-        var currentNode = mainNode;
+        MultiChildSynchronizedTreeNode<String> currentNode = mainNode;
         for (int i = 0; i < parts.size(); i++) {
             var child = currentNode.getByValue(parts.get(i));
             if (child == null) {
@@ -54,13 +56,14 @@ public class SiteMap {
         }
     }
 
-    private void addLink(List<String> parts, MultiChildTreeNode<String> node, int startIndex) {
+    private void addLink(List<String> parts, MultiChildSynchronizedTreeNode<String> node, int startIndex) {
         var currentNode = node;
         for (int i = startIndex; i < parts.size(); i++) {
             String partText = parts.get(i);
-            var newNode = new MultiChildTreeNode<>(partText);
+            var newNode = new LinkPartNode(partText);
             currentNode.addChild(newNode);
             currentNode = newNode;
         }
+        ((LinkPartNode) currentNode).setPage(true);
     }
 }
