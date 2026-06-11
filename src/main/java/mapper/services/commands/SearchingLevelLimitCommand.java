@@ -1,11 +1,14 @@
-package services.commands;
+package mapper.services.commands;
 
-import services.map.filler.MapFillersFactory;
+import lombok.extern.slf4j.Slf4j;
+import mapper.services.map.filler.MapFillersFactory;
 
 import java.util.Scanner;
 
+@Slf4j
 public class SearchingLevelLimitCommand implements Command {
 
+    private final Scanner scanner = new Scanner(System.in);
     private final MapFillersFactory factory;
     private int level;
 
@@ -32,12 +35,11 @@ public class SearchingLevelLimitCommand implements Command {
     }
 
     private void printCurrent() {
-        System.out.println("Текущий лимит вложенности поиска: " + factory.getMaximumSearchingLevel());
+        log.info("Текущий лимит вложенности поиска: {}", factory.getMaximumSearchingLevel());
     }
 
     private boolean tryInputLevel() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите новое значение или нажмите Enter для отмены:");
+        log.info("Введите новое значение или нажмите Enter для отмены:");
         var input = scanner.nextLine().trim();
 
         if (input.isEmpty()) {
@@ -50,11 +52,11 @@ public class SearchingLevelLimitCommand implements Command {
                 return true;
             }
         } catch (Exception e) {
-            System.out.println("Введено некорректное значение");
+            log.info("Введено некорректное значение");
             return false;
         }
 
-        System.out.println("Значение не может быть отрицательным числом");
+        log.info("Значение не может быть отрицательным числом");
         return false;
     }
 }

@@ -1,10 +1,11 @@
-package repository.parsers;
+package mapper.repository.parsers;
 
-import model.Link;
+import lombok.extern.slf4j.Slf4j;
+import mapper.model.Link;
+import mapper.services.links.LinksFactory;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import services.links.LinksFactory;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 public class PageNavigationLinksParser implements LinksParser {
     private static final Set<String> imageExtensions = new HashSet<>(
             List.of("jpg", "jpeg", "png", "gif", "bmp", "svg", "webp")
@@ -35,6 +37,7 @@ public class PageNavigationLinksParser implements LinksParser {
             if (isImage(url)) {
                 continue;
             }
+
             var link = linksFactory.createLink(url);
             if (link != null) {
                 list.add(link);
@@ -43,7 +46,7 @@ public class PageNavigationLinksParser implements LinksParser {
         return list;
     }
 
-    public boolean isImage(String url) {
+    private boolean isImage(String url) {
         var extension = getFileExtension(url);
         if (extension == null) {
             return false;

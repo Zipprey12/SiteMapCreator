@@ -1,6 +1,6 @@
-package services.commands;
+package mapper.services.commands;
 
-import services.Navigator;
+import mapper.services.Navigator;
 
 public class ExitCommand implements Command {
     private final Navigator navigator;

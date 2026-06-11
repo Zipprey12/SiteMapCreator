@@ -1,16 +1,21 @@
-package repository.output;
+package mapper.repository.output;
 
-import model.LinkPartNode;
-import services.map.SiteMap;
+import lombok.extern.slf4j.Slf4j;
+import mapper.model.LinkPartNode;
+import mapper.services.map.SiteMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
+@Slf4j
 public class MapWriter {
-    private static final String OUTPUT_DIR = "Multithreading_task/map_files/";
+    private static final String DEFAULT_OUTPUT_DIR = "map_files/";
 
     private final SiteMap map;
     private final Path path;
@@ -20,24 +25,25 @@ public class MapWriter {
     public MapWriter(SiteMap map) {
         this.map = map;
         String fileName = map.getSiteName() + ".txt";
-        path = Paths.get(OUTPUT_DIR + fileName);
+        path = Paths.get(DEFAULT_OUTPUT_DIR + fileName);
     }
 
     public void write() {
+        var start= System.currentTimeMillis();
         try {
             clear();
         } catch (Exception e) {
-            System.out.println("Не удалось подготовить файл для записи");
+            log.warn("Не удалось подготовить файл для записи");
         }
 
         try {
             print("", map.getMainNode(), 0);
         } catch (IOException e) {
-            System.out.println("Запись в файл завершилась с ошибкой: ");
-            e.printStackTrace();
+            log.warn("Запись в файл завершилась с ошибкой: ", e);
         }
-        System.out.println("Запись в файл завершена. Записано: " + linesCount + " строк");
-        System.out.println("Полный путь файла: " + path.getFileName().toAbsolutePath());
+        log.info("Запись в файл завершена. Записано: {} строк.\nВремя записи: {} мс",
+                linesCount - 1, System.currentTimeMillis() - start);
+        log.info("Полный путь файла: {}", path.getFileName().toAbsolutePath());
     }
 
     private void clear() throws IOException {

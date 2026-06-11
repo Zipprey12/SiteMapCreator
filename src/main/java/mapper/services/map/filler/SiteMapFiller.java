@@ -1,29 +1,34 @@
-package services.map.filler;
+package mapper.services.map.filler;
 
-import model.Link;
-import model.MapFillerArgs;
-import services.links.LinksFactory;
+import lombok.extern.slf4j.Slf4j;
+import mapper.model.Link;
+import mapper.model.MapFillerArgs;
+import mapper.services.links.LinksFactory;
+import org.jsoup.HttpStatusException;
 
 import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class SiteMapFiller extends RecursiveTask<List<Link>> {
-    private static final int MILLISECONDS_DELAY = 150;
-
     private final transient MapFillerArgs args;
     private final String currentPage;
     private final int currentLevel;
 
-    private int maxSearchingLevel;
-    private LinksFactory factory;
+    private final int maxSearchingLevel;
+    private final LinksFactory factory;
 
-    public SiteMapFiller(MapFillerArgs args, int currentLevel, String currentPage) {
+    public SiteMapFiller(MapFillerArgs args, String currentPage, int currentLevel) {
         this.args = args;
         this.currentPage = currentPage;
         this.currentLevel = currentLevel;
+        factory = args.getLinksFactory();
+        maxSearchingLevel = args.getMaxSearchingLevel();
     }
 
     @Override
@@ -38,11 +43,19 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
         try {
             args.getVisitedLinks().add(currentPage);
             links = args.getParser().parse(currentPage);
+        } catch (SocketException | SocketTimeoutException e) {
+            args.getFailedRequestsCount().incrementAndGet();
+            log.warn("Разрыв соединения [{}]: {}", currentPage, e.getMessage());
+            return List.of();
+        } catch (HttpStatusException e) {
+            args.getFailedRequestsCount().incrementAndGet();
+            log.warn("Ошибка HTTP {} [{}]", e.getStatusCode(), currentPage);
+            return List.of();
         } catch (IOException e) {
+            args.getFailedRequestsCount().incrementAndGet();
+            log.error("Ошибка запроса [{}]: {}", currentPage, e.getMessage());
             return List.of();
         }
-        factory = args.getLinksFactory();
-        maxSearchingLevel = args.getMaxSearchingLevel();
         processLinks(links);
         return links;
     }
@@ -60,7 +73,6 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
             }
         }
         sleep();
-
         showStatus(currentPage, links.size(), taskList.size());
         for (var task : taskList) {
             task.join();
@@ -82,21 +94,18 @@ public class SiteMapFiller extends RecursiveTask<List<Link>> {
             return null;
         }
         var absolutePath = factory.getAbsoluteUrl(link);
-        return new SiteMapFiller(args, currentLevel + 1, absolutePath);
+        return new SiteMapFiller(args, absolutePath, currentLevel + 1);
     }
 
     private void sleep() {
         try {
-            TimeUnit.MILLISECONDS.sleep(MILLISECONDS_DELAY);
+            TimeUnit.MILLISECONDS.sleep(args.getRequestDelayMs());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
         }
     }
 
     private void showStatus(String link, int linksCount, int tasksCount) {
-        String out = String.format("Обработка страницы:  %1$s  Ссылок найдено: %2$d. Новых: %3$d",
-                link, linksCount, tasksCount);
-        System.out.println(out);
+        log.info("Обработка страницы: {}   Ссылок найдено: {}. Новых: {}", link, linksCount, tasksCount);
     }
 }

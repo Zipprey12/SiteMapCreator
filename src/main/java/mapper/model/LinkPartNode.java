@@ -1,4 +1,4 @@
-package model;
+package mapper.model;
 
 public class LinkPartNode extends MultiChildSynchronizedTreeNode<String> {
     private boolean isPage = false;

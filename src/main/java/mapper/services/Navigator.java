@@ -1,12 +1,15 @@
-package services;
+package mapper.services;
 
-import services.commands.Command;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import mapper.services.commands.Command;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+@Slf4j
 public class Navigator {
     private final Scanner scanner = new Scanner(System.in);
 
@@ -14,11 +17,8 @@ public class Navigator {
     private final HashMap<Runnable, String> commands = new HashMap<>();
 
     private boolean isRunning;
+    @Setter
     private String description;
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public Navigator add(Command command) {
         commandsList.add(command);
@@ -43,7 +43,7 @@ public class Navigator {
         showCommands();
         var command = selectCommand();
         if (command == null) {
-            System.out.println("Введено некорректнное значение!");
+            log.warn("Введено некорректное значение!");
         } else {
             command.run();
         }
@@ -54,20 +54,19 @@ public class Navigator {
     }
 
     public void showCommands() {
-        System.out.println();
-
+        log.info("\n");
         if (description != null) {
-            System.out.println(description);
+            log.info(description);
         }
         for (int i = 0; i < commands.size(); i++) {
             var runnable = commandsList.get(i);
             var commandDescription = commands.get(runnable);
-            System.out.println(i + 1 + " - " + commandDescription);
+            log.info("{} - {}", i + 1, commandDescription);
         }
     }
 
     private Runnable selectCommand() {
-        System.out.println("[Ожидание ввода...]");
+        log.info("[Ожидание ввода...]");
         var input = scanner.nextLine().trim().toLowerCase();
         try {
             int number = Integer.parseInt(input) - 1;

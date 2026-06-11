@@ -1,27 +1,31 @@
-package services.map;
+package mapper.services.map;
 
-import model.Link;
-import model.LinkPartNode;
-import model.MultiChildSynchronizedTreeNode;
+import lombok.Getter;
+import mapper.model.Link;
+import mapper.model.LinkPartNode;
+import mapper.model.MultiChildSynchronizedTreeNode;
 
 import java.util.List;
 
 public class SiteMap {
-    private LinkPartNode mainNode;
-    private String siteName;
-    private String initialPage;
 
-    public void initialize(String initialPage, List<String> linkParts) {
+    @Getter
+    private LinkPartNode mainNode;
+
+    @Getter
+    private String siteName;
+
+    public void initialize(String mainPart, List<String> linkParts) {
         if (linkParts.isEmpty()) {
             throw new IllegalArgumentException("To initialize the map's main node, linkParts must not be empty");
         }
-        this.initialPage = initialPage;
-        this.siteName = linkParts.getFirst();
+
+        mainNode = new LinkPartNode(mainPart);
+        siteName = linkParts.getFirst();
         initializeNodes(linkParts);
     }
 
     private void initializeNodes(List<String> linkParts) {
-        mainNode = new LinkPartNode(initialPage);
         var current = mainNode;
         for (int i = 1; i < linkParts.size(); i++) {
             var newNode = new LinkPartNode(linkParts.get(i));
@@ -29,14 +33,6 @@ public class SiteMap {
             current = newNode;
         }
         current.setPage(true);
-    }
-
-    public LinkPartNode getMainNode() {
-        return mainNode;
-    }
-
-    public String getSiteName() {
-        return siteName;
     }
 
     public void addLink(Link link) {

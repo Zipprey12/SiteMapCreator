@@ -1,17 +1,20 @@
-package services.commands;
+package mapper.services.commands;
 
-import model.SiteProtocol;
-import repository.output.MapWriter;
-import services.Navigator;
-import services.links.LinksFactory;
-import services.map.filler.MapFillersFactory;
+import lombok.extern.slf4j.Slf4j;
+import mapper.model.SiteProtocol;
+import mapper.repository.output.MapWriter;
+import mapper.services.Navigator;
+import mapper.services.links.LinksFactory;
+import mapper.services.map.filler.MapFillersFactory;
 
 import java.util.Scanner;
 
+@Slf4j
 public class CreateMapCommand implements Command {
 
     private final LinksFactory linksFactory;
     private final MapFillersFactory mapFillersFactory;
+    private final Scanner scanner = new Scanner(System.in);
 
     private Navigator navigator;
 
@@ -32,20 +35,19 @@ public class CreateMapCommand implements Command {
         }
         var map = mapFillersFactory.createMap();
         if (map == null) {
-            System.out.println("Не удалось подключиться по данной ссылке. Карта не была создана");
+            log.warn("Не удалось подключиться по данной ссылке. Карта не была создана");
         } else {
-            System.out.println("Происходит запись в файл. Не закрывайте приложение!");
+            log.info("Происходит запись в файл. Не закрывайте приложение!");
             new MapWriter(map).write();
         }
     }
 
     private boolean tryInputUrl() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите адрес сайта: ");
+        log.info("Введите адрес сайта: ");
         var input = scanner.nextLine();
 
         if (!linksFactory.trySetInitialParsingPage(input)) {
-            System.out.println("Введены некорректные данные!");
+            log.warn("Введены некорректные данные!");
             return false;
         }
         return linksFactory.getProtocol() != null || tryInputProtocol();

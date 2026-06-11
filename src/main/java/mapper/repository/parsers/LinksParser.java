@@ -1,6 +1,6 @@
-package repository.parsers;
+package mapper.repository.parsers;
 
-import model.Link;
+import mapper.model.Link;
 
 import java.io.IOException;
 import java.io.Serializable;

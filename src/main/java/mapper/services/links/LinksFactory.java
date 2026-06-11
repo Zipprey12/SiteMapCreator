@@ -1,7 +1,9 @@
-package services.links;
+package mapper.services.links;
 
-import model.Link;
-import model.SiteProtocol;
+import lombok.AccessLevel;
+import lombok.Getter;
+import mapper.model.Link;
+import mapper.model.SiteProtocol;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -10,29 +12,26 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Getter
 public abstract class LinksFactory implements Serializable {
+
     private static final String PROTOCOL_REGEX = "^https?://";
     private static final Pattern PROTOCOL_PATTERN = Pattern.compile(PROTOCOL_REGEX);
 
     private String domain;
+    private String initialPage;
+    private String mainPage;
+
+    @Getter(AccessLevel.PRIVATE)
+    private String initialPart;
+
     private SiteProtocol protocol;
+
     private List<String> initialLinkParts;
 
     public abstract Link createLink(String path);
 
     public abstract String getAbsoluteUrl(Link link);
-
-    public SiteProtocol getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(SiteProtocol protocol) {
-        this.protocol = protocol;
-    }
-
-    public String getInitialPage() {
-        return protocol.getValue() + domain;
-    }
 
     public List<String> getInitialLinkParts() {
         if (initialLinkParts == null) {
@@ -41,6 +40,10 @@ public abstract class LinksFactory implements Serializable {
         return Collections.unmodifiableList(initialLinkParts);
     }
 
+    public void setProtocol(SiteProtocol protocol) {
+        this.protocol = protocol;
+        initParts(protocol.getValue());
+    }
     public boolean trySetInitialParsingPage(String url) {
         this.protocol = null;
         this.domain = null;
@@ -86,6 +89,16 @@ public abstract class LinksFactory implements Serializable {
         var link = new Link(url);
         initialLinkParts = link.getParts();
         domain = initialLinkParts.getFirst();
+        initialPart = url;
+
+        if (protocol != null) {
+            initParts(protocol.getValue());
+        }
         return true;
+    }
+
+    private void initParts(String protocolValue) {
+        mainPage = protocolValue + domain;
+        initialPage = protocolValue + initialPart;
     }
 }
