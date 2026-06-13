@@ -1,0 +1,14 @@
+package mapper.repository.parsers;
+
+import mapper.model.Link;
+import mapper.model.ParsingType;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
+
+public interface LinksParser extends Serializable {
+    List<Link> parse(String pageAddress) throws IOException;
+
+    void setParsingType(ParsingType type);
+}
