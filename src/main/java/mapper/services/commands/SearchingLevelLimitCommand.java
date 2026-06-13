@@ -1,6 +1,7 @@
 package mapper.services.commands;
 
 import lombok.extern.slf4j.Slf4j;
+import mapper.services.commands.input.InputProvider;
 import mapper.services.map.filler.MapFillersFactory;
 
 import java.util.Optional;
@@ -10,7 +11,9 @@ public class SearchingLevelLimitCommand extends CommandWithInput<Integer> {
 
     private final MapFillersFactory factory;
 
-    public SearchingLevelLimitCommand(MapFillersFactory factory) {
+    public SearchingLevelLimitCommand(InputProvider inputProvider,
+                                      MapFillersFactory factory) {
+        super(inputProvider);
         this.factory = factory;
     }
 

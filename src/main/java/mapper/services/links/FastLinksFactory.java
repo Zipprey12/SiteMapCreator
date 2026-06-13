@@ -15,10 +15,14 @@ public class FastLinksFactory extends RelativeLinksFactory {
     }
 
     @Override
-    public String getMainPage() { return base.getMainPage(); }
+    public String getMainPage() {
+        return base.getMainPage();
+    }
 
     @Override
-    public String getDomain() { return base.getDomain(); }
+    public String getDomain() {
+        return base.getDomain();
+    }
 
     private String stripQueryParams(String url) {
         int i = url.indexOf('?');

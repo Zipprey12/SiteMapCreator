@@ -40,7 +40,7 @@ public class MapWriter {
         }
         log.info("Запись в файл завершена. Записано: {} строк.\nВремя записи: {} мс",
                 linesCount - 1, System.currentTimeMillis() - start);
-        log.info("Полный путь файла: {}", path.getFileName().toAbsolutePath());
+        log.info("Полный путь файла: {}", path.toAbsolutePath());
     }
 
     private void clear() throws IOException {

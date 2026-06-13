@@ -1,13 +1,15 @@
 package mapper.services.commands;
 
+import lombok.RequiredArgsConstructor;
 import mapper.services.Navigator;
 
-public class ExitCommand implements Command {
-    private final Navigator navigator;
+import java.util.concurrent.ForkJoinPool;
 
-    public ExitCommand(Navigator navigator) {
-        this.navigator = navigator;
-    }
+@RequiredArgsConstructor
+public class ExitCommand implements Command {
+
+    private final Navigator navigator;
+    private final ForkJoinPool pool;
 
     @Override
     public String getDescription() {
@@ -17,5 +19,6 @@ public class ExitCommand implements Command {
     @Override
     public void run() {
         navigator.stop();
+        pool.shutdown();
     }
 }

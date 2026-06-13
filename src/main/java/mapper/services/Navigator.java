@@ -1,17 +1,20 @@
 package mapper.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import mapper.services.commands.Command;
+import mapper.services.commands.input.InputProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 @Slf4j
+@RequiredArgsConstructor
 public class Navigator {
-    private final Scanner scanner = new Scanner(System.in);
+
+    private final InputProvider inputProvider;
 
     private final List<Runnable> commandsList = new ArrayList<>();
     private final HashMap<Runnable, String> commands = new HashMap<>();
@@ -67,7 +70,8 @@ public class Navigator {
 
     private Runnable selectCommand() {
         log.info("[Ожидание ввода...]");
-        var input = scanner.nextLine().trim().toLowerCase();
+
+        var input = inputProvider.getNext();
         try {
             int number = Integer.parseInt(input) - 1;
             return commandsList.get(number);

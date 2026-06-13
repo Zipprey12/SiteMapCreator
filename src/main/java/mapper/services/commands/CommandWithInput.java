@@ -2,16 +2,18 @@ package mapper.services.commands;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mapper.services.commands.input.InputProvider;
 
 import java.util.Optional;
-import java.util.Scanner;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class CommandWithInput<T> implements Command {
 
     @Getter(AccessLevel.PROTECTED)
-    private final Scanner scanner = new Scanner(System.in);
+    private final InputProvider inputProvider;
 
     @Override
     public void run() {
@@ -31,8 +33,10 @@ public abstract class CommandWithInput<T> implements Command {
 
     protected boolean tryExecute() {
         log.info(getOperationDescription());
-        var input = getScanner().nextLine().trim();
-        if (input.isEmpty()) {
+        String input;
+
+        input = inputProvider.getNext();
+        if (input == null || input.isEmpty()) {
             return true;
         }
 
@@ -43,5 +47,4 @@ public abstract class CommandWithInput<T> implements Command {
         executeWithValue(parsed.get());
         return true;
     }
-
 }

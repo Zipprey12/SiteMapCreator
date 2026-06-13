@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,14 +19,23 @@ import static org.mockito.Mockito.verify;
 
 class MapFillersFactoryTest {
 
+    private static final ForkJoinPool POOL = new ForkJoinPool();
+
     private LinksParser parser;
     private MapFillersFactory factory;
+
+    private static Stream<Arguments> getTypes() {
+        return Stream.of(
+                Arguments.of(ParsingType.FAST),
+                Arguments.of(ParsingType.EXTENDED)
+        );
+    }
 
     @BeforeEach
     void setUp() {
         parser = mock(LinksParser.class);
         var linksFactory = new RelativeLinksFactory();
-        factory = new MapFillersFactory(parser, linksFactory);
+        factory = new MapFillersFactory(parser, linksFactory, POOL);
     }
 
     @Test
@@ -44,12 +54,5 @@ class MapFillersFactoryTest {
 
         verify(parser).setParsingType(type);
         assertThat(factory.getParsingType()).isEqualTo(type);
-    }
-
-    private static Stream<Arguments> getTypes() {
-        return Stream.of(
-                Arguments.of(ParsingType.FAST),
-                Arguments.of(ParsingType.EXTENDED)
-        );
     }
 }

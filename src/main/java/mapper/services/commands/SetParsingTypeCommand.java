@@ -1,19 +1,23 @@
 package mapper.services.commands;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mapper.model.ParsingType;
+import mapper.services.commands.input.InputProvider;
 import mapper.services.map.filler.MapFillersFactory;
 
 import java.util.Optional;
 
 @Slf4j
-@RequiredArgsConstructor
 public class SetParsingTypeCommand extends CommandWithInput<ParsingType> {
 
     public static final String INCORRECT_VALUE_MESSAGE = "Введено некорректное значение";
 
     private final MapFillersFactory factory;
+
+    public SetParsingTypeCommand(InputProvider inputProvider, MapFillersFactory factory) {
+        super(inputProvider);
+        this.factory = factory;
+    }
 
     @Override
     public String getDescription() {

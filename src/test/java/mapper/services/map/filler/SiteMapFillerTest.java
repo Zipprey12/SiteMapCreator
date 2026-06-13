@@ -41,6 +41,16 @@ class SiteMapFillerTest {
     private SiteMap map;
     private Set<String> visitedLinks;
 
+    private static Stream<Arguments> getIoExceptions() {
+        return Stream.of(
+                Arguments.of("SocketException", new SocketException("Connection reset")),
+                Arguments.of("SocketTimeoutException", new SocketTimeoutException("Timed out")),
+                Arguments.of("HttpStatusException 429", new HttpStatusException("Too Many Requests",
+                        429, BASE_HTTPS_PAGE)),
+                Arguments.of("General IOException", new IOException("Unknown error"))
+        );
+    }
+
     @BeforeEach
     void setUp() {
         parser = mock(LinksParser.class);
@@ -63,7 +73,7 @@ class SiteMapFillerTest {
     }
 
     private void run(MapFillerArgs args) {
-        try (var pool = new ForkJoinPool()){
+        try (var pool = new ForkJoinPool()) {
             pool.invoke(new SiteMapFiller(args, BASE_HTTPS_PAGE, 0));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -119,7 +129,6 @@ class SiteMapFillerTest {
         verify(parser, never()).parse(CATALOG_URL);
     }
 
-
     @ParameterizedTest(name = "{0} increments failed counter")
     @MethodSource("getIoExceptions")
     void exceptionIncrementsFailedCounter(IOException exception) throws IOException {
@@ -129,15 +138,5 @@ class SiteMapFillerTest {
         run(args);
 
         assertThat(args.getFailedRequestsCount().get()).isEqualTo(1);
-    }
-
-    private static Stream<Arguments> getIoExceptions() {
-        return Stream.of(
-                Arguments.of("SocketException",        new SocketException("Connection reset")),
-                Arguments.of("SocketTimeoutException", new SocketTimeoutException("Timed out")),
-                Arguments.of("HttpStatusException 429", new HttpStatusException("Too Many Requests",
-                        429, BASE_HTTPS_PAGE)),
-                Arguments.of("General IOException",    new IOException("Unknown error"))
-        );
     }
 }

@@ -28,7 +28,7 @@ public class MapFillersFactory {
 
     private final LinksParser parser;
     private final Set<String> visitedLinks;
-    private final ForkJoinPool pool = new ForkJoinPool();
+    private final ForkJoinPool pool;
 
     private SiteMap map;
 
@@ -47,8 +47,9 @@ public class MapFillersFactory {
     @Getter
     private ParsingType parsingType = ParsingType.EXTENDED;
 
-    public MapFillersFactory(LinksParser parser, ILinksFactory factory) {
+    public MapFillersFactory(LinksParser parser, ILinksFactory factory, ForkJoinPool pool) {
         this.linksFactory = factory;
+        this.pool = pool;
         visitedLinks = Collections.synchronizedSet(new HashSet<>());
         this.parser = parser;
     }

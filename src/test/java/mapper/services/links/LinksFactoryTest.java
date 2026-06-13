@@ -13,9 +13,8 @@ public class LinksFactoryTest {
     public static final String DOMAIN = "some.domain.com";
     public static final String PAGE_PART = "page1";
     public static final String BASE_HTTPS_PAGE = "https://" + DOMAIN;
-    public static final String BASE_HTTP_PAGE = "http://" + DOMAIN;
-
     public static final String DEFAULT_HTTPS_URL = BASE_HTTPS_PAGE + "/" + PAGE_PART;
+    public static final String BASE_HTTP_PAGE = "http://" + DOMAIN;
     public static final String DEFAULT_HTTP_URL = BASE_HTTP_PAGE + "/" + PAGE_PART;
 
     private RelativeLinksFactory factory;
