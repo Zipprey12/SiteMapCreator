@@ -60,23 +60,24 @@ mvn compile exec:java
 ## Структура проекта
 
 ```
-src/main/java/mapper/
-  Main.java
-  model/                      # Доменные модели
-    Link.java                 # Ссылка и её составные части
-    LinkPartNode.java         # Узел дерева карты
-    MapFillerArgs.java        # Аргументы для многопоточного обхода
-    ParsingType.java          # Режим парсинга (FAST / EXTENDED)
-    SiteProtocol.java         # Протокол (HTTP / HTTPS)
-  repository/
-    output/MapWriter.java     # Запись карты в файл
-    parsers/                  # Парсинг HTML-страниц
-  services/
-    Navigator.java            # Консольное меню
-    commands/                 # Команды меню
-    links/                    # Фабрики для работы со ссылками
-    map/                      # Построение карты сайта
-      filler/                 # Многопоточный обход (ForkJoinPool)
+.
+└── src/main/java/mapper/
+    ├── Main.java
+    ├── model/                      # Доменные модели/
+    │   ├── Link.java                 # Ссылка и её составные части
+    │   ├── LinkPartNode.java         # Узел дерева карты
+    │   ├── MapFillerArgs.java        # Аргументы для многопоточного обхода
+    │   ├── ParsingType.java          # Режим парсинга (FAST / EXTENDED)
+    │   └── SiteProtocol.java         # Протокол (HTTP / HTTPS)
+    ├── repository/
+    │   ├── output/MapWriter.java     # Запись карты в файл
+    │   └── parsers/                  # Парсинг HTML-страниц
+    └── services/
+        ├── Navigator.java            # Консольное меню
+        ├── commands/                 # Команды меню
+        ├── links/                    # Фабрики для работы со ссылками
+        └── map/                      # Построение карты сайта/
+            └── filler/                 # Многопоточный обход (ForkJoinPool)
 ```
 
 ## Ключевые компоненты
